@@ -26,13 +26,20 @@ public class ServicesMutant {
 		Controller mutants = new Controller();
 
 		boolean mutant = mutants.isMutant(dna.getDna());
-		db.saveDNA(dna, mutant);
+		boolean exist = db.existDna(dna);
 		
-		if(mutant) {
-			return new ResponseEntity<>(HttpStatus.OK + "", HttpStatus.OK);
+		if(exist) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN +" This DNA already exist", HttpStatus.FORBIDDEN);
 		} else {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN +" Error 403-Forbidden", HttpStatus.FORBIDDEN);
+			db.saveDNA(dna, mutant);
+			
+			if(mutant) {
+				return new ResponseEntity<>(HttpStatus.OK + "", HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN +" Error 403-Forbidden", HttpStatus.FORBIDDEN);
+			}
 		}
+		
 	}
 	
 	@RequestMapping("/stats")
@@ -40,8 +47,13 @@ public class ServicesMutant {
 		MutantsDB db = new MutantsDB();
 		int mutants = db.countMutant();
 		int humans = db.countHumans();
-		// double ratio = mutants/humans;
-		return new CountDna(mutants, humans , 1);
+		double ratio = 0;
+		if(humans == 0) {
+			ratio = mutants  ;
+		} else {
+			ratio = mutants/humans;			
+		}
+		return new CountDna(mutants, humans , ratio);
 	}
 
 }

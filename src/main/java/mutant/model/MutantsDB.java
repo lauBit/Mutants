@@ -12,6 +12,29 @@ public class MutantsDB {
 	ConnectionDB db = new ConnectionDB();
 	Connection con;
 	
+	public boolean existDna(DNA dna) {
+		boolean exist = false;
+		try {
+			con = db.conectar();
+			String dnaConcat = String.join(" ", dna.getDna()).replace(" ", "").toUpperCase();
+
+			String sql = "SELECT DNA FROM DNA WHERE DNA = ?";
+			ps = con.prepareStatement(sql);
+			ps.setString(1, dnaConcat);
+			
+			int rows = ps.executeUpdate();
+			
+			if(rows>0) {
+				exist = true;
+			}
+			
+		} catch(Exception e) {
+			
+		}	
+		
+		return exist;
+	}
+	
 	public DNA saveDNA(DNA dna, boolean mutant) {
 		try {
 			con = db.conectar();
