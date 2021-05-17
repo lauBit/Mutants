@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/*
+ * Class to make connection to Oracle database
+ * */
 public class ConnectionDB {
 	
 public static boolean mutant = false;

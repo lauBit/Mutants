@@ -14,9 +14,16 @@ import mutant.controller.DNA;
 import mutant.model.CountDna;
 import mutant.model.MutantsDB;
 
+/*
+ * Service to receive dna and to know how many mutants and humans there are in total.
+ * */
 @RestController
 public class ServicesMutant {
 	
+	/*
+	 * Post method that receives a json with the dna and returns a 200 ok if it is mutant
+	 * and a 403 if it is human or if it's not the requested format.
+	 * */
 	@PostMapping("/mutant")
 	public ResponseEntity<String> isMutant(@RequestBody DNA dna) throws SQLException{
 		
@@ -25,6 +32,7 @@ public class ServicesMutant {
 		Controller mutants = new Controller();
 
 		boolean mutant = mutants.isMutant(dna.getDna());
+		//calls the method that validates if the record exists
 		boolean exist = db.existDna(dna);
 		
 		if(exist) {
@@ -41,6 +49,7 @@ public class ServicesMutant {
 		
 	}
 	
+	//Get method to return how many humans and mutants there are
 	@RequestMapping("/stats")
 	public CountDna statsMutants() {
 		MutantsDB db = new MutantsDB();
@@ -48,7 +57,7 @@ public class ServicesMutant {
 		int humans = db.countHumans();
 		double ratio = 0;
 		if(humans == 0) {
-			ratio = mutants  ;
+			ratio = mutants;
 		} else {
 			ratio = mutants/humans;			
 		}

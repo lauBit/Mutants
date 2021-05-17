@@ -6,12 +6,17 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import mutant.controller.DNA;
+/*
+ * Class to perform queries and database insertion
+ * */
+
 public class MutantsDB {
 	
 	PreparedStatement ps;
 	ConnectionDB db = new ConnectionDB();
 	Connection con;
 	
+	// Query to determine if the record to be consult, already exists in the database 
 	public boolean existDna(DNA dna) {
 		boolean exist = false;
 		try {
@@ -35,10 +40,13 @@ public class MutantsDB {
 		return exist;
 	}
 	
+	//Query to insert the record to the data base
 	public DNA saveDNA(DNA dna, boolean mutant) {
 		try {
 			con = db.conectar();
+			// converts the dna object to a string (this is the data type in the database)	
 			String s = String.join(" ", dna.getDna()).replace(" ", "").toUpperCase();
+			
 			int isMutant = 0;
 			if(mutant) {
 				isMutant = 1;
@@ -62,6 +70,8 @@ public class MutantsDB {
 		return dna;	
 	}
 	
+	/*Query to count how many mutants are registered, 
+	if the dna is mutant it will be stored with a 1 in the database.*/
 	public int countMutant() {
 		int mutants = 0;
 		try {
@@ -81,6 +91,8 @@ public class MutantsDB {
 	return mutants; 
 	}
 	
+	/*Query to count how many humans are registered, 
+	if the dna is mutant it will be stored with a 0 in the database.*/
 	public int countHumans() {
 		int mutants = 0;
 		try {
