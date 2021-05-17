@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>MutantsDB.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">MutantApplicationTests (16/05/2021 9:12:08 p. m.)</a> &gt; <a href="../../index.html" class="el_group">Mutants</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">mutant.model</a> &gt; <span class="el_source">MutantsDB.java</span></div><h1>MutantsDB.java</h1><pre class="source lang-java linenums">package mutant.model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import mutant.controller.DNA;
+/*
+ * Class to perform queries and database insertion
+ * */
+
+<span class="fc" id="L13">public class MutantsDB {</span>
+	
+	PreparedStatement ps;
+<span class="fc" id="L16">	ConnectionDB db = new ConnectionDB();</span>
+	Connection con;
+	
+	// Query to determine if the record to be consult, already exists in the database 
+	public boolean existDna(DNA dna) {
+<span class="fc" id="L21">		boolean exist = false;</span>
+		try {
+<span class="fc" id="L23">			con = db.conectar();</span>
+<span class="fc" id="L24">			String dnaConcat = String.join(&quot; &quot;, dna.getDna()).replace(&quot; &quot;, &quot;&quot;).toUpperCase();</span>
+
+<span class="fc" id="L26">			String sql = &quot;SELECT DNA FROM DNA WHERE DNA = ?&quot;;</span>
+<span class="fc" id="L27">			ps = con.prepareStatement(sql);</span>
+<span class="fc" id="L28">			ps.setString(1, dnaConcat);</span>
+			
+<span class="fc" id="L30">			int rows = ps.executeUpdate();</span>
+			
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">			if(rows&gt;0) {</span>
+<span class="fc" id="L33">				exist = true;</span>
+			}
+			
+<span class="pc" id="L36">		} catch(Exception e) {</span>
+			
+		}	
+		
+<span class="fc" id="L40">		return exist;</span>
+	}
+	
+	//Query to insert the record to the data base
+	public DNA saveDNA(DNA dna, boolean mutant) {
+		try {
+<span class="fc" id="L46">			con = db.conectar();</span>
+			// converts the dna object to a string (this is the data type in the database)	
+<span class="fc" id="L48">			String s = String.join(&quot; &quot;, dna.getDna()).replace(&quot; &quot;, &quot;&quot;).toUpperCase();</span>
+			
+<span class="fc" id="L50">			int isMutant = 0;</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">			if(mutant) {</span>
+<span class="fc" id="L52">				isMutant = 1;</span>
+			}
+			
+<span class="fc" id="L55">			String sql = &quot;INSERT INTO DNA (dna, mutant) VALUES (?, ?)&quot;;</span>
+<span class="fc" id="L56">			ps = con.prepareStatement(sql);</span>
+<span class="fc" id="L57">			ps.setString(1, s);</span>
+<span class="fc" id="L58">			ps.setInt(2, isMutant);</span>
+			
+<span class="fc" id="L60">			int rows = ps.executeUpdate();</span>
+			
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			if (rows &gt; 0 ) {</span>
+<span class="fc" id="L63">				System.out.println(&quot;Row inserted&quot;);</span>
+			}
+			
+<span class="pc" id="L66">		} catch (Exception e) {</span>
+			// TODO: handle exception
+		}
+	
+<span class="fc" id="L70">		return dna;	</span>
+	}
+	
+	/*Query to count how many mutants are registered, 
+	if the dna is mutant it will be stored with a 1 in the database.*/
+	public int countMutant() {
+<span class="fc" id="L76">		int mutants = 0;</span>
+		try {
+<span class="fc" id="L78">			con = db.conectar();			</span>
+<span class="fc" id="L79">			Statement stmt = con.createStatement();</span>
+<span class="fc" id="L80">			ResultSet mutant = stmt.executeQuery(&quot;SELECT COUNT(MUTANT) FROM DNA WHERE MUTANT=1&quot;);</span>
+			
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			while (mutant.next()) {</span>
+<span class="fc" id="L83">				String mutantss = mutant.getString(&quot;COUNT(MUTANT)&quot;);</span>
+<span class="fc" id="L84">				mutants = Integer.parseInt(mutantss);</span>
+			}
+				
+<span class="pc" id="L87">		} catch (Exception e) {</span>
+			// TODO: handle exception
+		}
+		
+<span class="fc" id="L91">	return mutants; </span>
+	}
+	
+	/*Query to count how many humans are registered, 
+	if the dna is mutant it will be stored with a 0 in the database.*/
+	public int countHumans() {
+<span class="fc" id="L97">		int mutants = 0;</span>
+		try {
+<span class="fc" id="L99">			con = db.conectar();</span>
+
+<span class="fc" id="L101">			Statement stmt = con.createStatement();</span>
+<span class="fc" id="L102">			ResultSet mutant = stmt.executeQuery(&quot;SELECT COUNT(MUTANT) FROM DNA WHERE MUTANT=0&quot;);</span>
+			
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			while (mutant.next()) {</span>
+<span class="fc" id="L105">				String mutantss = mutant.getString(&quot;COUNT(MUTANT)&quot;);</span>
+<span class="fc" id="L106">				mutants = Integer.parseInt(mutantss);</span>
+			}
+		
+			
+<span class="pc" id="L110">		} catch (Exception e) {</span>
+			// TODO: handle exception
+		}
+		
+<span class="fc" id="L114">	return mutants; </span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span>MutantApplicationTests (16/05/2021 9:12:08 p. m.)</div></body></html>

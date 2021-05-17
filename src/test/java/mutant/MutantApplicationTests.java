@@ -1,6 +1,5 @@
 package mutant;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
@@ -78,7 +77,7 @@ private final Controller mutants = new Controller();
 	  
 	  boolean exist = mutantsDb.existDna(dna); 
 	  
-	  boolean expected = false;
+	  boolean expected = true;
   
 	  assertEquals(exist, expected); 
   
@@ -134,7 +133,7 @@ private final Controller mutants = new Controller();
 		actual = servicesMutant.isMutant(dna);
 		
 		ResponseEntity<String> expected;
-		expected = new ResponseEntity<>(HttpStatus.OK + "", HttpStatus.OK);
+		expected = new ResponseEntity<>(HttpStatus.FORBIDDEN +" This DNA already exist", HttpStatus.FORBIDDEN);
 		
 		assertEquals(expected, actual);
 	}
